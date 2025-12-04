@@ -1,0 +1,168 @@
+Техническое задание для Cursor AI: Telegram-бот "InstaPsychology Carousel Generator"
+
+1.Общее описание
+
+Необходимо разработать Telegram-бота на Python, который автоматизирует создание контента и визуалов для Instagram-каруселей (8 слайдов, формат 4:5) для блога психолога.
+Бот принимает тему от пользователя, генерирует тексты через LLM (Gemini-3-PRO) и визуализирует слайды через нейросеть (Nana Banana PRO/Replicate).
+
+2. Стек технологий
+Язык: 
+Python 3.10+
+Telegram Framework: Aiogram 3.x
+Обработка данных: json, pydantic (для валидации структуры).
+Интеграции и API: Используй интеграции с Gemini-3-PRO и Nana Banana PRO, которые сделаны в боте, находящемся здесь: D:\Projects_ViveCoding\MegaBot.
+Gemini-3-PRO — через API Replicate.
+Nana Banana PRO — через API kie.
+Конфигурация: Все токены доступа к API собраны в файле .env в каталоге проекта.
+
+3. Логика работы (Workflow)
+
+Шаг 1: Получение темы
+Пользователь отправляет текстовое сообщение (тему), например: "Почему тревожные люди чаще всего перфекционисты".
+Бот сохраняет user_id и тему.
+Бот отправляет сообщение "Генерирую структуру карусели..." и передает тему в Gemini-3-PRO.
+
+Шаг 2: Генерация контента (LLM)
+Бот отправляет запрос в Gemini-3-PRO через Replicate API.
+Входные данные: 
+Тема пользователя + Системный Промпт №1 (см. Раздел 5).
+Ожидаемый ответ: Строгий JSON формат с 8 объектами слайдов.
+Бот парсит JSON. 
+Если JSON невалиден, делает повторный запрос (до 2 попыток).
+
+Шаг 3: Генерация изображений (Image Loop)
+Бот итерируется по массиву slides из полученного JSON. 
+Важно: Генерация происходит последовательно (синхронно или с ожиданием), чтобы не перегружать API и отправлять слайды по порядку.
+
+Логика формирования запроса к Nana Banana PRO:
+
+Слайд 1 (Обложка):
+Input Image: Используем файл background/image1.jpg (фото женщины).
+Prompt: Составляется на основе поля visual_idea из JSON + Текст заголовка.
+Logic: Наложить легкий блюр на фото, разместить Заголовок и Подзаголовок (текст должен быть читаемым).
+
+Слайды 2-8 
+(Контент):
+Style Reference: Используем референс background/image2.jpg.
+Prompt: Составляется на основе полей background_style, decoration, title, content из JSON.
+Logic: Светлый текстурный фон, бежево-коричневые заголовки, черный текст, маленькая иллюстрация в правом нижнем углу.
+
+Слайд 8 (CTA):Дополнительно к логике слайдов 2-7, должен рендериться текст CTA внизу слайда.
+
+Шаг 4: Отправка результата
+Бот получает URL/файл изображения от Nana Banana PRO.
+Сразу отправляет этот слайд пользователю в чат (не ждать генерации всех 8, отправлять по мере готовности).
+Переходит к генерации следующего слайда.
+
+4. Конфигурация и Ресурсы
+В проекте должны быть следующие папки и файлы:
+background/image1.jpg (Референс для первого слайда - фото женщины).
+background/image2.jpg (Референс стиля для слайдов 2-8).
+
+5. Системные Промпты (System Prompts)
+
+5.1. Системный Промпт для Gemini-3-PRO (Генерация контента)
+
+Этот промпт должен отправляться в поле system_prompt или в начале контекста диалога:
+
+Ты — профессиональный контент-маркетолог и эксперт-психолог, специализирующийся на создании вирусных экспертных каруселей для Instagram.
+ТВОЯ ЗАДАЧА:
+На основе темы, которую пришлет пользователь, создать структуру и контент для карусели из ровно 8 слайдов.
+
+ФОРМАТ ВЫВОДА:
+Строгий JSON. Никакого markdown, никаких объяснений до или после JSON.
+
+ТРЕБОВАНИЯ К КОНТЕНТУ:
+1. Тон: эмпатичный, профессиональный, бережный, без "успешного успеха".
+2. Структура:
+   - Слайд 1: Цепляющий заголовок + интригующий подзаголовок.
+   - Слайды 2-7: Раскрытие темы. Короткие тезисы. Легко читаемый текст. Буллиты.
+   - Слайд 8: Вывод + CTA (Call to Action).
+3. Визуальный стиль (описать в JSON):
+   - Слайд 1: Фон - фото женщины (файл background/image1.jpg), слегка заблюренное.
+   - Слайды 2-8: Светлый фон с легкой текстурой, минимализм (файл background/image2.jpg).
+   - Типографика: Заголовки - антиква (бежевый/коричневый), Текст - гротеск (черный).
+
+СТРУКТУРА JSON (Пример):
+{
+  "meta_info": {
+    "topic": "Тема запроса",
+    "platform": "Instagram Carousel",
+    "total_slides": 8,
+    "overall_concept": {
+      "style": "Единый стиль для слайдов 2-8: светлый фон...",
+      "typography": {
+        "titles": "Элегантный антиква...",
+        "body_text": "Чистый гротеск..."
+      }
+    }
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "cover",
+      "title": "Текст заголовка",
+      "subtitle": "Текст подзаголовка",
+      "visual_idea": "background_image: 'background/image1.jpg'. Blur background..."
+    },
+    {
+      "slide_number": 2, // и так далее до 8
+      "title": "Заголовок слайда",
+      "content": ["Тезис 1", "Тезис 2"],
+      "background_style": "uniform light textured background (reference: background/image2.jpg)...",
+      "typography": { ... },
+      "decoration": "small illustration description..."
+    },
+    // ... слайды 3-7 ...
+    {
+      "slide_number": 8,
+      "type": "final",
+      "title": "Вывод",
+      "content": ["Итог"],
+      "call_to_action": "Вопрос к аудитории или призыв",
+      "background_style": "...",
+      "decoration": "..."
+    }
+  ]
+}
+
+5.2. Системная инструкция для Nana Banana PRO (Генерация визуала)
+
+Вариант А (промпт отправляется вместе с каждым запросом):
+
+Для Слайда 1:
+Create a 4:5 Instagram slide. Use the provided reference image (background/image1.jpg) as the background. Apply a soft blur to the background image to make text readable.
+Overlay the following text in Russian:
+Title: "{title_from_json}" (Font: Elegant Serif, Color: Beige/Light Brown, Large size, Centered).
+Subtitle: "{subtitle_from_json}" (Font: Sans Serif, Color: White or Dark Brown, Medium size).
+Atmosphere: Psychological, calm, professional, cozy.
+
+Для Слайдов 2-8:
+Create a 4:5 Instagram slide. Use the provided reference image (background/image2.jpg) as the background style.
+Background: Uniform light textured paper/wall background (Beige/Cream) based on reference.
+Design elements:
+1. Header: "{title_from_json}" (Font: Elegant Serif, Color: Brown/Beige, Top aligned).
+2. Body Text: "{content_array_joined}" (Font: Clean Sans Serif, Color: Black/Dark Grey, Aligned left or center, Bullet points).
+3. Decor: Place a small, minimalist illustration in the bottom right corner depicting: {decoration_from_json}. Style of illustration: Line art or soft watercolor, matching the background.
+4. (Only for Slide 8) Footer: Call to Action text: "{cta_from_json}".
+Keep the design clean, airy, easy to read.
+
+6. Обработка ошибок
+Если Gemini вернул невалидный JSON, бот должен попробовать починить его (можно использовать библиотеку json_repair) или повторить запрос.
+Если генерация изображения упала с ошибкой, повторить попытку 1 раз, затем сообщить пользователю "Ошибка генерации слайда N".
+
+7. Файловая структура проекта/bot_project
+    /background
+        image1.jpg
+        image2.jpg
+    /handlers
+        user_handlers.py
+    /services
+        gemini_service.py
+        image_gen_service.py
+    /utils
+        prompts.py
+    main.py
+    config.py
+    requirements.txt
+

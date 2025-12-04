@@ -1,0 +1,684 @@
+## Basic model info
+
+Model name: google/gemini-3-pro
+Model description: Google's most advanced reasoning Gemini model
+
+
+## Model inputs
+
+- prompt (required): The text prompt to send to the model (string)
+- images (optional): Input images to send with the prompt (max 10 images, each up to 7MB) (array)
+- videos (optional): Input videos to send with the prompt (max 10 videos, each up to 45 minutes) (array)
+- audio (optional): Input audio to send with the prompt (max 1 audio file, up to 8.4 hours) (string)
+- system_instruction (optional): System instruction to guide the model's behavior (string)
+- thinking_level (optional): Thinking level for reasoning (low or high). Replaces thinking_budget for Gemini 3 models. (string)
+- temperature (optional): Sampling temperature between 0 and 2 (number)
+- top_p (optional): Nucleus sampling parameter - the model considers the results of the tokens with top_p probability mass (number)
+- max_output_tokens (optional): Maximum number of tokens to generate (integer)
+
+
+## Model output schema
+
+{
+  "type": "array",
+  "items": {
+    "type": "string"
+  },
+  "title": "Output",
+  "x-cog-array-type": "iterator",
+  "x-cog-array-display": "concatenate"
+}
+
+If the input or output schema includes a format of URI, it is referring to a file.
+
+
+## Example inputs and outputs
+
+Use these example outputs to better understand the types of inputs the model accepts, and the types of outputs the model returns:
+
+### Example (https://replicate.com/p/39v6g0yqe9rmc0ctkc1rggqcar)
+
+#### Input
+
+```json
+{
+  "audio": "https://replicate.delivery/pbxt/O5Vw2eTOp7z4V27QYXqEUQZ5OvwTEKj2TVf3syi4dTJpvUG9/Never%20Gonna%20Give%20You%20Up%20-%20Rick%20Astley.mp3",
+  "top_p": 0.95,
+  "images": [],
+  "prompt": "Why should I be scared of this audio?",
+  "videos": [],
+  "temperature": 1,
+  "thinking_level": "low",
+  "max_output_tokens": 65535
+}
+```
+
+#### Output
+
+```json
+[
+  "You shouldn't be scared for your safety, but you might be scared for your **pride**.\n\nThis audio is the 1987",
+  " hit song **\"Never Gonna Give You Up\" by Rick Astley**.\n\nThe reason you might fear it is because of the internet",
+  " phenomenon known as **\"Rickrolling.\"**\n\nHere is the context:\n1.  **The Bait and Switch:** A",
+  " \"Rickroll\" is a prank where someone sends a link that claims to be something exciting (like a leaked movie trailer, free",
+  " money, or breaking news).\n2.  **The Trap:** When you click the link, instead of getting what you were",
+  " promised, you are confronted with the music video for this song.\n3.  **The \"Fear\":** The",
+  " fear associated with this audio is the paranoia that any link you click on the internet might be a trap. Hearing those opening drums",
+  " means **you have been tricked, you let your guard down, and you lost the game.**\n\nSo, if you hear this audio",
+  " unexpectedly, it doesn't mean you are in danger\u2014it just means someone successfully pulled a prank on you."
+]
+```
+
+
+## Model readme
+
+> #Gemini 3 Overview
+> 
+> ## Introduction  
+> **Gemini 3** is marking a major milestone two years into the Gemini era. With billions of users engaging with Gemini-powered products, this release continues Google’s mission to rapidly deliver advanced AI through its full-stack approach — from infrastructure to models to products that reach the world.
+> 
+> ## What’s New in Gemini 3  
+> **Gemini 3** is Google’s most intelligent, multimodal model to date. It unifies and advances every capability from prior generations to help users *learn, build, and plan anything*. Key improvements include:
+> 
+> - **State-of-the-art reasoning** with deeper contextual understanding and more nuanced interpretations.  
+> - **Better intent recognition**, requiring fewer prompts.  
+> 
+> ---
+> 
+> ## Performance Highlights  
+> Gemini 3 delivers substantial improvements across reasoning, multimodality, coding, and factual accuracy:
+> 
+> - **#1 on LMArena** (1501 Elo)  
+> - **PhD-level reasoning** with top scores on Humanity’s Last Exam and GPQA Diamond  
+> - **Breakthrough mathematics** with state-of-the-art MathArena Apex performance  
+> - **Leading multimodal understanding** with top results on MMMU-Pro and Video-MMMU  
+> - **High factual reliability**, scoring 72.1% on SimpleQA Verified
+> 
+> ### Gemini 3 Deep Think  
+> A new enhanced-reasoning mode that pushes performance even further, achieving:
+> 
+> - 41% on Humanity’s Last Exam  
+> - 93.8% on GPQA Diamond  
+> - 45.1% on ARC-AGI-2 (with code execution)
+> 
+> Deep Think will be released to **Google AI Ultra** subscribers after final safety review.
+> 
+> ---
+> 
+> ## What You Can Do with Gemini 3
+> 
+> ### Learn Anything  
+> Gemini 3’s million-token context window and multimodal reasoning enable richer understanding and personalized learning:  
+> - Translate and preserve handwritten family recipes  
+> - Convert research papers or long videos into interactive learning tools  
+> - Analyze sports footage and generate personalized training plans  
+> - Explore new web experiences in AI Mode with dynamic, generative UIs
+> 
+> ### Build Anything  
+> Gemini 3 is Google’s most powerful **vibe coding** and **agentic coding** model:  
+> - Exceptional zero-shot generation and complex prompt handling  
+> - Top of WebDev Arena (1487 Elo)  
+> - Advanced tool use (54.2% on Terminal-Bench 2.0)  
+> - Strong agentic performance (76.2% on SWE-bench Verified)
+> 
+> ### Plan Anything  
+> Gemini 3 excels at long-horizon planning and consistent multi-step execution:  
+> - #1 on Vending-Bench 2 for year-long simulated planning  
+> - Capable of handling real-world tasks like inbox organization or service booking  
+> - Gemini Agent now available to Google AI Ultra subscribers
+> 
+> 
+> ---
+> 
+> ## Responsible AI & Safety  
+> Gemini 3 is Google’s most secure model yet, with extensive evaluations including:  
+> - Reduced sycophancy and stronger prompt-injection resistance  
+> - Enhanced defenses against cyber misuse  
+> - External evaluations by Apollo, Vaultis, Dreadnode, and partnership with bodies like the UK AISI  
+> 
+> ---
+> 
+> ## Looking Ahead  
+> Gemini 3 marks the start of a new chapter focused on advancing intelligence, agents, and personalization. Google will continue iterating rapidly — and looks forward to seeing what users build with it.
+
+****************
+Authentication
+Whenever you make an API request, you need to authenticate using a token. A token is like a password that uniquely identifies your account and grants you access.
+
+The following examples all expect your Replicate access token to be available from the command line. Because tokens are secrets, they should not be in your code. They should instead be stored in environment variables. Replicate clients look for the REPLICATE_API_TOKEN environment variable and use it if available.
+
+To set this up you can use:
+
+export REPLICATE_API_TOKEN=r8_Pv9**********************************
+
+Visibility
+
+Copy
+Some application frameworks and tools also support a text file named .env which you can edit to include the same token:
+
+REPLICATE_API_TOKEN=r8_Pv9**********************************
+
+Visibility
+
+Copy
+The Replicate API uses the Authorization HTTP header to authenticate requests. If you’re using a client library this is handled for you.
+
+You can test that your access token is setup correctly by using our account.get endpoint:
+
+What is cURL?
+curl https://api.replicate.com/v1/account -H "Authorization: Bearer $REPLICATE_API_TOKEN"
+# {"type":"user","username":"aron","name":"Aron Carroll","github_url":"https://github.com/aron"}
+
+Copy
+If it is working correctly you will see a JSON object returned containing some information about your account, otherwise ensure that your token is available:
+
+echo "$REPLICATE_API_TOKEN"
+# "r8_xyz"
+
+Copy
+Setup
+NodeJS supports two module formats ESM and CommonJS. Below details the setup for each environment. After setup, the code is identical regardless of module format.
+
+ESM
+First you’ll need to ensure you have a NodeJS project:
+
+npm create esm -y
+
+Copy
+Then install the replicate JavaScript library using npm:
+
+npm install replicate
+
+Copy
+To use the library, first import and create an instance of it:
+
+import Replicate from "replicate";
+
+const replicate = new Replicate();
+
+Copy
+This will use the REPLICATE_API_TOKEN API token you’ve setup in your environment for authorization.
+
+CommonJS
+First you’ll need to ensure you have a NodeJS project:
+
+npm create -y
+
+Copy
+Then install the replicate JavaScript library using npm:
+
+npm install replicate
+
+Copy
+To use the library, first import and create an instance of it:
+
+const Replicate = require("replicate");
+
+const replicate = new Replicate();
+
+Copy
+This will use the REPLICATE_API_TOKEN API token you’ve setup in your environment for authorization.
+
+Run the model
+Use the replicate.run() method to run the model:
+
+const input = {
+    audio: "https://replicate.delivery/pbxt/O5Vw2eTOp7z4V27QYXqEUQZ5OvwTEKj2TVf3syi4dTJpvUG9/Never%20Gonna%20Give%20You%20Up%20-%20Rick%20Astley.mp3",
+    prompt: "Why should I be scared of this audio?",
+    thinking_level: "low"
+};
+
+const output = await replicate.run("google/gemini-3-pro", { input });
+
+console.log(output.join(""));
+//=> "You shouldn't be scared for your safety, but you might b...
+
+Copy
+You can learn about pricing for this model on the model page.
+
+The run() function returns the output directly, which you can then use or pass as the input to another model. If you want to access the full prediction object (not just the output), use the replicate.predictions.create() method instead. This will include the prediction id, status, logs, etc.
+
+File inputs
+This model accepts files as input. You can provide a file as input using a URL, a local file on your computer, or a base64 encoded object:
+
+Option 1: Hosted file
+Use a URL as in the earlier example:
+
+const audio = "https://replicate.delivery/pbxt/O5Vw2eTOp7z4V27QYXqEUQZ5OvwTEKj2TVf3syi4dTJpvUG9/Never%20Gonna%20Give%20You%20Up%20-%20Rick%20Astley.mp3";
+
+Copy
+This is useful if you already have an image hosted somewhere on the internet.
+
+Option 2: Local file
+You can provide Replicate with a Blob, File or Buffer object and the library will handle the upload for you:
+
+import { readFile } from "node:fs/promises";
+const audio = await readFile("./path/to/my/audio.wav");
+
+Copy
+Option 3: Data URI
+You can create a data URI consisting of the base64 encoded data for your file, but this is only recommended if the file is < 1mb
+
+import { readFile } from "node:fs/promises";
+const data = (await readFile("./audio.wav")).toString("base64");
+const audio = `data:application/octet-stream;base64,${data}`;
+
+Copy
+Then, pass audio as part of the input:
+
+const input = {
+    audio: audio,
+    prompt: "Why should I be scared of this audio?",
+    thinking_level: "low"
+};
+
+const output = await replicate.run("google/gemini-3-pro", { input });
+
+console.log(output.join(""));
+//=> "You shouldn't be scared for your safety, but you might b...
+
+Copy
+Streaming
+This model supports streaming. This allows you to receive output as the model is running:
+
+const Replicate = require("replicate")
+const replicate = new Replicate()
+
+const input = {
+    audio: "https://replicate.delivery/pbxt/O5Vw2eTOp7z4V27QYXqEUQZ5OvwTEKj2TVf3syi4dTJpvUG9/Never%20Gonna%20Give%20You%20Up%20-%20Rick%20Astley.mp3",
+    prompt: "Why should I be scared of this audio?",
+    thinking_level: "low"
+};
+
+for await (const event of replicate.stream("google/gemini-3-pro", { input })) {
+  // event: { event: string; data: string; id: string }
+  process.stdout.write(`${event}`)
+  //=> "You shouldn't be scared for your safety, but you might be scared for your **pride**.\n\nThis audio is the 1987"
+};
+process.stdout.write("\n");
+
+Copy
+The replicate.stream() method returns a ReadableStream which can be iterated to transform the events into any data structure needed.
+
+For example, to stream just the output content back:
+
+function handler(request) {
+  const stream = new ReadableStream({
+    async start(controller) {
+      for await (const event of replicate.stream( "google/gemini-3-pro", { input })) {
+        controller.enqueue(new TextEncoder().encode(`${event}`));
+        //=> "You shouldn't be scared for your safety, but you might be scared for your **pride**.\n\nThis audio is the 1987"
+      }
+      controller.close();
+    },
+  });
+  return new Response(stream);
+}
+
+Copy
+Or, stream a list of JSON objects back to the client instead of server sent events:
+
+function handler(request) {
+  const iterator = replicate.stream( "google/gemini-3-pro", { input });
+  const stream = new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+      const encoder = new TextEncoder();
+
+      if (done) {
+        controller.close();
+      } else if (value.event === "output" && value.data.length > 0) {
+        controller.enqueue(encoder.encode(JSON.stringify({ data: value.data }) + "\n"));
+      } else {
+        controller.enqueue(encoder.encode(""));
+      }
+    },
+  });
+  return new Response(stream);
+}
+
+Copy
+Streaming in the browser
+The JavaScript library is intended to be run on the server. Once the prediction has been created it's output can be streamed directly from the browser.
+
+The streaming URL uses a standard format called Server Sent Events (or text/event-stream) built into all web browsers.
+
+A common implementation is to use a web server to create the prediction using replicate.predictions.create, passing the stream property set to true. Then the urls.stream property of the response contains a URL that can be returned to your frontend application:
+
+// POST /run_prediction
+handler(req, res) {
+  const input = {
+    audio: "https://replicate.delivery/pbxt/O5Vw2eTOp7z4V27QYXqEUQZ5OvwTEKj2TVf3syi4dTJpvUG9/Never%20Gonna%20Give%20You%20Up%20-%20Rick%20Astley.mp3",
+    prompt: "Why should I be scared of this audio?",
+    thinking_level: "low"
+};
+  const prediction = await replicate.predictions.create({
+    model: "google/gemini-3-pro",
+    input,
+    stream: true,
+  });
+  return Response.json({ url: prediction.urls.stream });
+  // Returns {"url": "https://replicate-stream..."}
+}
+
+Copy
+Make a request to the server to create the prediction and use the built-in EventSource object to read the returned url.
+
+const response = await fetch("/run_prediction", { method: "POST" });
+const { url } = await response.json();
+
+const source = new EventSource(url);
+source.addEventListener("output", (evt) => {
+  console.log(evt.data) //=> "You shouldn't be scared for your safety, but you might be scared for your **pride**.\n\nThis audio is the 1987"
+});
+source.addEventListener("done", (evt) => {
+  console.log("stream is complete");
+});
+
+Copy
+Prediction lifecycle
+Running predictions and trainings can often take significant time to complete, beyond what is reasonable for an HTTP request/response.
+
+When you run a model on Replicate, the prediction is created with a “starting” state, then instantly returned. This will then move to "processing" and eventual one of “successful”, "failed" or "canceled".
+
+Starting
+Running
+Succeeded
+Failed
+Canceled
+You can explore the prediction lifecycle by using the predictions.get() method to retrieve the latest version of the prediction until completed.
+
+Show example
+Webhooks
+Webhooks provide real-time updates about your prediction. Specify an endpoint when you create a prediction, and Replicate will send HTTP POST requests to that URL when the prediction is created, updated, and finished.
+
+It is possible to provide a URL to the predictions.create() function that will be requested by Replicate when the prediction status changes. This is an alternative to polling.
+
+To receive webhooks you’ll need a web server. The following example uses Hono, a web standards based server, but this pattern applies to most frameworks.
+
+Show example
+Then create the prediction passing in the webhook URL and specify which events you want to receive out of "start", "output", ”logs” and "completed".
+
+const input = {
+    audio: "https://replicate.delivery/pbxt/O5Vw2eTOp7z4V27QYXqEUQZ5OvwTEKj2TVf3syi4dTJpvUG9/Never%20Gonna%20Give%20You%20Up%20-%20Rick%20Astley.mp3",
+    prompt: "Why should I be scared of this audio?",
+    thinking_level: "low"
+};
+
+const callbackURL = `https://my.app/webhooks/replicate`;
+await replicate.predictions.create({
+  model: "google/gemini-3-pro",
+  input: input,
+  webhook: callbackURL,
+  webhook_events_filter: ["completed"],
+});
+
+// The server will now handle the event and log:
+// => {"id": "xyz", "status": "successful", ... }
+
+Copy
+ℹ️ The replicate.run() method is not used here. Because we're using webhooks, and we don’t need to poll for updates.
+
+Co-ordinating between a prediction request and a webhook response will require some glue. A simple implementation for a single JavaScript server could use an event emitter to manage this.
+
+Show example
+From a security perspective it is also possible to verify that the webhook came from Replicate. Check out our documentation on verifying webhooks for more information.
+
+Access a prediction
+You may wish to access the prediction object. In these cases it’s easier to use the replicate.predictions.create() or replicate.deployments.predictions.create() functions which will return the prediction object.
+
+Though note that these functions will only return the created prediction, and it will not wait for that prediction to be completed before returning. Use replicate.predictions.get() to fetch the latest prediction.
+
+const input = {
+    audio: "https://replicate.delivery/pbxt/O5Vw2eTOp7z4V27QYXqEUQZ5OvwTEKj2TVf3syi4dTJpvUG9/Never%20Gonna%20Give%20You%20Up%20-%20Rick%20Astley.mp3",
+    prompt: "Why should I be scared of this audio?",
+    thinking_level: "low"
+};
+const prediction = replicate.predictions.create({
+  model: "google/gemini-3-pro",
+  input
+});
+// { "id": "xyz123", "status": "starting", ... }
+
+Copy
+Cancel a prediction
+You may need to cancel a prediction. Perhaps the user has navigated away from the browser or canceled your application. To prevent unnecessary work and reduce runtime costs you can use the replicate.predictions.cancel function and pass it a prediction id.
+
+await replicate.predictions.cancel(prediction.id);
+
+Input schema
+Table
+JSON
+audio
+uri
+Input audio to send with the prompt (max 1 audio file, up to 8.4 hours)
+
+top_p
+number
+Nucleus sampling parameter - the model considers the results of the tokens with top_p probability mass
+
+Default
+0.95
+Maximum
+1
+images
+array
+Input images to send with the prompt (max 10 images, each up to 7MB)
+
+Default
+[]
+prompt
+string
+The text prompt to send to the model
+
+videos
+array
+Input videos to send with the prompt (max 10 videos, each up to 45 minutes)
+
+Default
+[]
+temperature
+number
+Sampling temperature between 0 and 2
+
+Default
+1
+Maximum
+2
+thinking_level
+string
+Thinking level for reasoning (low or high). Replaces thinking_budget for Gemini 3 models.
+
+max_output_tokens
+integer
+Maximum number of tokens to generate
+
+Default
+65535
+Minimum
+1
+Maximum
+65535
+system_instruction
+string
+System instruction to guide the model's behavior
+
+Output schema
+Table
+JSON
+Type
+string[]
+All services are online
+
+Input schema
+Table
+JSON
+{
+  "type": "object",
+  "title": "Input",
+  "required": [
+    "prompt"
+  ],
+  "properties": {
+    "audio": {
+      "type": "string",
+      "title": "Audio",
+      "format": "uri",
+      "x-order": 3,
+      "nullable": true,
+      "description": "Input audio to send with the prompt (max 1 audio file, up to 8.4 hours)"
+    },
+    "top_p": {
+      "type": "number",
+      "title": "Top P",
+      "default": 0.95,
+      "maximum": 1,
+      "minimum": 0,
+      "x-order": 7,
+      "description": "Nucleus sampling parameter - the model considers the results of the tokens with top_p probability mass"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "title": "Images",
+      "default": [],
+      "x-order": 1,
+      "description": "Input images to send with the prompt (max 10 images, each up to 7MB)"
+    },
+    "prompt": {
+      "type": "string",
+      "title": "Prompt",
+      "x-order": 0,
+      "description": "The text prompt to send to the model"
+    },
+    "videos": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "title": "Videos",
+      "default": [],
+      "x-order": 2,
+      "description": "Input videos to send with the prompt (max 10 videos, each up to 45 minutes)"
+    },
+    "temperature": {
+      "type": "number",
+      "title": "Temperature",
+      "default": 1,
+      "maximum": 2,
+      "minimum": 0,
+      "x-order": 6,
+      "description": "Sampling temperature between 0 and 2"
+    },
+    "thinking_level": {
+      "enum": [
+        "low",
+        "high"
+      ],
+      "type": "string",
+      "title": "thinking_level",
+      "description": "Thinking level for reasoning (low or high). Replaces thinking_budget for Gemini 3 models.",
+      "x-order": 5,
+      "nullable": true
+    },
+    "max_output_tokens": {
+      "type": "integer",
+      "title": "Max Output Tokens",
+      "default": 65535,
+      "maximum": 65535,
+      "minimum": 1,
+      "x-order": 8,
+      "description": "Maximum number of tokens to generate"
+    },
+    "system_instruction": {
+      "type": "string",
+      "title": "System Instruction",
+      "x-order": 4,
+      "nullable": true,
+      "description": "System instruction to guide the model's behavior"
+    }
+  }
+}
+
+Copy
+Output schema
+Table
+JSON
+Type
+string[]
+All services are online
+
+Create a prediction
+
+predictions.create
+
+Get a prediction
+
+predictions.get
+Input parameters
+prediction_id
+string
+Required
+The ID of the prediction to get.
+Examples
+
+Get
+Get the latest version of a prediction by id
+
+Make a request
+/predictions/{prediction_id}
+import Replicate from "replicate";
+const replicate = new Replicate();
+
+console.log("Getting prediction...")
+const prediction = await replicate.predictions.get(predictionId);
+//=> {"id": "xyz...", "status": "successful", ... }
+
+Copy
+
+Cancel a prediction
+
+predictions.cancel
+Input parameters
+prediction_id
+string
+Required
+The ID of the prediction to cancel.
+Examples
+
+Cancel
+Cancel an in progress prediction
+
+Make a request
+/predictions/{prediction_id}/cancel
+import Replicate from "replicate";
+const replicate = new Replicate();
+
+console.log("Canceling prediction...")
+const prediction = await replicate.predictions.cancel(predictionId);
+//=> {"id": "xyz...", "status": "canceled", ... }
+
+Copy
+
+List predictions
+
+predictions.list
+Examples
+
+List
+List the first page of your predictions
+
+
+Paginate
+Make a request
+/predictions
+import Replicate from "replicate";
+const replicate = new Replicate();
+
+const page = await replicate.predictions.list();
+console.log(page.results)
+//=> [{ "id": "xyz...", "status": "successful", ... }, { ... }]

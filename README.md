@@ -200,23 +200,29 @@ sudo journalctl -u carousel-bot -f
 
 ```
 carousel_bot/
-├── app/
-│   ├── handlers/
-│   │   └── user_handlers.py      # Обработчики команд и генерации
-│   ├── services/
-│   │   ├── gemini_service.py     # Сервис для Gemini-3-PRO
-│   │   └── image_gen_service.py  # Сервис для Nana Banana PRO
-│   ├── utils/
-│   │   ├── prompts.py            # Системные промпты для всех режимов
-│   │   └── background_utils.py   # Утилиты для работы с URL фонов
-│   └── config.py                 # Конфигурация
-├── background/
-│   └── image2.jpg                 # Референс для слайдов 2-N
-├── post_from_carousel.txt         # Промпт для поста из карусели
-├── post_without_carousel.txt      # Промпт для поста без карусели
-├── main.py                        # Точка входа
-├── requirements.txt               # Зависимости
-└── .env                           # Переменные окружения (создать вручную)
+├── app/                           # Основной пакет приложения
+│   ├── __init__.py
+│   ├── config.py                  # Конфигурация (настройки, переменные окружения)
+│   ├── background_urls.json       # Сохраненные URL фоновых изображений
+│   ├── handlers/                  # Обработчики команд и сообщений
+│   │   ├── __init__.py
+│   │   └── user_handlers.py       # Основные обработчики (команды, генерация)
+│   ├── services/                  # Сервисы для работы с внешними API
+│   │   ├── __init__.py
+│   │   ├── gemini_service.py      # Сервис для Gemini-3-PRO (Replicate API)
+│   │   └── image_gen_service.py   # Сервис для Nana Banana PRO (Kie.ai API)
+│   └── utils/                     # Утилиты и промпты
+│       ├── __init__.py
+│       ├── prompts.py             # Системные промпты для всех режимов
+│       └── background_utils.py    # Утилиты для работы с URL фонов
+├── background/                    # Фоновые изображения
+│   └── image2.jpg                  # Референс для слайдов 2-N (статический фон)
+├── main.py                        # Точка входа приложения
+├── requirements.txt               # Python зависимости
+├── .env                           # Переменные окружения (создать вручную)
+├── post_from_carousel.txt         # Промпт для поста из карусели (справочный)
+├── post_without_carousel.txt      # Промпт для поста без карусели (справочный)
+└── README.md                      # Документация
 ```
 
 ## 🔧 Технические детали

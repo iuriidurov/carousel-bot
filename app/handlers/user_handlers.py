@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 from typing import Dict, List, Optional, Any
 import httpx
 from telegram import Update, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
@@ -15,6 +16,100 @@ async def check_url_availability(url: str) -> bool:
     except Exception as e:
         logger.warning(f"Ошибка проверки доступности URL {url[:50]}...: {e}")
         return False
+
+def clean_post_text(text: str) -> str:
+    """
+    Строгая очистка текста поста от markdown символов и лишних элементов.
+    Гарантирует, что текст готов для отправки в Telegram с HTML разметкой.
+    """
+    if not text:
+        return ""
+    
+    # Убираем вводные фразы
+    intro_phrases = [
+        "Конечно, вот пост:",
+        "Вот пост:",
+        "Вот текст поста:",
+        "Вот готовый пост:",
+        "Готовый пост:",
+        "Конечно, вот текст:",
+        "Вот текст:",
+        "Вот готовый текст:",
+        "Готовый текст:",
+    ]
+    text = text.strip()
+    for phrase in intro_phrases:
+        if text.startswith(phrase):
+            text = text[len(phrase):].strip()
+    
+    # Убираем кавычки в начале и конце
+    if (text.startswith('"') and text.endswith('"')) or (text.startswith("'") and text.endswith("'")):
+        text = text[1:-1].strip()
+    
+    # Разделяем текст на части: HTML теги и обычный текст
+    # Это нужно, чтобы не трогать символы внутри HTML тегов
+    parts = []
+    i = 0
+    while i < len(text):
+        if text[i] == '<':
+            # Нашли начало HTML тега, ищем конец
+            tag_end = text.find('>', i)
+            if tag_end != -1:
+                parts.append(('tag', text[i:tag_end+1]))
+                i = tag_end + 1
+            else:
+                parts.append(('text', text[i]))
+                i += 1
+        else:
+            # Обычный текст, собираем до следующего тега
+            text_start = i
+            while i < len(text) and text[i] != '<':
+                i += 1
+            parts.append(('text', text[text_start:i]))
+    
+    # Обрабатываем только части с типом 'text'
+    cleaned_parts = []
+    for part_type, part_text in parts:
+        if part_type == 'tag':
+            cleaned_parts.append(part_text)
+        else:
+            # Убираем markdown символы из обычного текста
+            cleaned = part_text
+            
+            # Убираем двойные звездочки и подчеркивания (жирный текст markdown)
+            cleaned = re.sub(r'\*\*([^*]+)\*\*', r'\1', cleaned)
+            cleaned = re.sub(r'__([^_]+)__', r'\1', cleaned)
+            
+            # Убираем одинарные звездочки и подчеркивания (курсив markdown)
+            # Только если они окружают текст (не одиночные символы)
+            cleaned = re.sub(r'\*([^*\n]+?)\*', r'\1', cleaned)  # *текст* -> текст
+            cleaned = re.sub(r'_([^_\n]+?)_', r'\1', cleaned)  # _текст_ -> текст
+            
+            # Убираем символы # для заголовков (только в начале строки)
+            cleaned = re.sub(r'^#+\s+', '', cleaned, flags=re.MULTILINE)
+            
+            # Убираем символы для списков markdown (-, *, +) в начале строки
+            cleaned = re.sub(r'^[\-\*\+]\s+', '', cleaned, flags=re.MULTILINE)
+            
+            # Убираем оставшиеся одиночные символы * и _ (только если они стоят отдельно)
+            # Не трогаем символы внутри слов или чисел
+            cleaned = re.sub(r'(?<!\w)\*+(?!\w)', '', cleaned)  # Убираем * только если не часть слова
+            cleaned = re.sub(r'(?<!\w)_+(?!\w)', '', cleaned)  # Убираем _ только если не часть слова
+            
+            cleaned_parts.append(cleaned)
+    
+    # Собираем обратно
+    text = ''.join(cleaned_parts)
+    
+    # Убираем лишние пробелы и переносы строк в начале/конце
+    text = text.strip()
+    
+    # Убираем множественные пустые строки (оставляем максимум 2 подряд)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    
+    logger.debug(f"Текст после очистки: {text[:200]}...")
+    
+    return text
 
 from ..config import settings
 from ..services.gemini_service import GeminiService
@@ -788,28 +883,16 @@ async def generate_post_standalone(update: Update, context: ContextTypes.DEFAULT
             )
             return
         
-        # Очищаем текст от возможных markdown символов и лишних символов
-        # Убираем markdown, если он есть
-        post_text = post_text.replace("**", "").replace("__", "").replace("#", "")
+        # Строгая очистка текста от markdown символов и лишних элементов
+        post_text = clean_post_text(post_text)
         
-        # Убираем кавычки в начале и конце, если они есть
-        post_text = post_text.strip()
-        if post_text.startswith('"') and post_text.endswith('"'):
-            post_text = post_text[1:-1]
-        if post_text.startswith("'") and post_text.endswith("'"):
-            post_text = post_text[1:-1]
-        
-        # Убираем вводные фразы, если они есть
-        intro_phrases = [
-            "Конечно, вот пост:",
-            "Вот пост:",
-            "Вот текст поста:",
-            "Вот готовый пост:",
-            "Готовый пост:",
-        ]
-        for phrase in intro_phrases:
-            if post_text.startswith(phrase):
-                post_text = post_text[len(phrase):].strip()
+        if not post_text or len(post_text.strip()) < 50:
+            await context.bot.send_message(
+                chat_id,
+                "⚠️ После очистки текст поста оказался слишком коротким. Попробуйте позже.",
+                reply_markup=ReplyKeyboardRemove()
+            )
+            return
         
         # Проверяем длину (Telegram ограничение - 4096 символов)
         if len(post_text) > 4096:
@@ -863,28 +946,16 @@ async def generate_post(update: Update, context: ContextTypes.DEFAULT_TYPE, topi
             )
             return
         
-        # Очищаем текст от возможных markdown символов и лишних символов
-        # Убираем markdown, если он есть
-        post_text = post_text.replace("**", "").replace("__", "").replace("#", "")
+        # Строгая очистка текста от markdown символов и лишних элементов
+        post_text = clean_post_text(post_text)
         
-        # Убираем кавычки в начале и конце, если они есть
-        post_text = post_text.strip()
-        if post_text.startswith('"') and post_text.endswith('"'):
-            post_text = post_text[1:-1]
-        if post_text.startswith("'") and post_text.endswith("'"):
-            post_text = post_text[1:-1]
-        
-        # Убираем вводные фразы, если они есть
-        intro_phrases = [
-            "Конечно, вот пост:",
-            "Вот пост:",
-            "Вот текст поста:",
-            "Вот готовый пост:",
-            "Готовый пост:",
-        ]
-        for phrase in intro_phrases:
-            if post_text.startswith(phrase):
-                post_text = post_text[len(phrase):].strip()
+        if not post_text or len(post_text.strip()) < 50:
+            await context.bot.send_message(
+                chat_id,
+                "⚠️ После очистки текст поста оказался слишком коротким. Попробуйте позже.",
+                reply_markup=ReplyKeyboardRemove()
+            )
+            return
         
         # Проверяем длину (Telegram ограничение - 4096 символов)
         if len(post_text) > 4096:

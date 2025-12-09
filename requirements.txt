@@ -5,3 +5,5 @@ python-dotenv==1.0.1
 json-repair==0.27.0
 loguru==0.7.2
 beautifulsoup4==4.12.3
+Pillow>=10.0.0
+pyairtable>=2.0.0
